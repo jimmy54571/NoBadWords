@@ -176,7 +176,33 @@
             const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
             return `${year}-W${weekNumber}`;
         }
+        async function deductPoint(user) {
+    try {
+        const reason = prompt(`Enter reason for ${user}'s deduction:`);
+        if (!reason) {
+            alert("No reason entered. Deduction canceled.");
+            return;
+        }
 
+        const docRef = doc(db, "points", user);
+        let data = await getPoints(user);
+        data.weekly = Math.max(0, data.weekly - 1);
+
+        const timestamp = new Date().toLocaleString();
+        const logEntry = { timestamp, reason };
+
+        await updateDoc(docRef, {
+            weekly: data.weekly,
+            logs: arrayUnion(logEntry)
+        });
+
+        updateUI();
+        alert(`1 point deducted from ${user}.\nReason: ${reason}`);
+    } catch (error) {
+        console.error("Error deducting points:", error);
+        alert("Error deducting points. Check console for details.");
+    }
+}
         window.onload = async function () {
             await updateUI();
 
