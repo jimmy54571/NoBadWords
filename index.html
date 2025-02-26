@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>點數追蹤系統</title>
+    <script type="module">
+        // 1?? 匯入 Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        // 2?? Firebase 設定（從 Firebase Console 拿你的專案設定）
+        const firebaseConfig = {
+            apiKey: "你的API金鑰",
+            authDomain: "你的專案.firebaseapp.com",
+            projectId: "你的專案ID",
+            storageBucket: "你的專案.appspot.com",
+            messagingSenderId: "你的發送ID",
+            appId: "你的應用ID"
+        };
+
+        // 3?? 初始化 Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 4?? 讀取 Firestore 中的點數
+        async function getPoints(user) {
+            const docRef = doc(db, "points", user);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                return docSnap.data().points;
+            } else {
+                return 0; // 預設值
+            }
+        }
+
+        // 5?? 更新 Firestore 點數
+        async function deductPoint(user) {
+            const docRef = doc(db, "points", user);
+            let points = await getPoints(user);
+            points = Math.max(0, points - 1);
+            await setDoc(docRef, { points });
+            alert(`${user} 剩餘點數: ${points}`);
+        }
+
+        // 6?? 點擊按鈕時執行扣點
+        window.onload = async function () {
+            document.getElementById("deductUser").onclick = () => deductPoint("user");
+            document.getElementById("deductGF").onclick = () => deductPoint("girlfriend");
+        };
+    </script>
+</head>
+<body>
+    <h1>點數追蹤系統</h1>
+    <button id="deductUser">扣 1 點 (User)</button>
+    <button id="deductGF">扣 1 點 (Girlfriend)</button>
+</body>
+</html>
