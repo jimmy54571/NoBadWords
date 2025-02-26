@@ -5,18 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> No Bad Words </title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
         body {
-            font-family: "Comic Sans MS", Arial, sans-serif;
-            background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+            font-family: 'Press Start 2P', cursive;
+            background: repeating-linear-gradient(45deg, #222 0px, #333 10px, #222 20px);
             text-align: center;
             padding: 20px;
-            color: #ff4081;
+            color: #fff;
         }
 
         h1 {
-            font-size: 32px;
-            color: white;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 24px;
+            background: black;
+            color: #ffcc00;
+            display: inline-block;
+            padding: 10px;
+            border: 3px solid white;
+            text-transform: uppercase;
         }
 
         .container {
@@ -29,65 +35,52 @@
         .section {
             width: 40%;
             padding: 20px;
-            border-radius: 15px;
-            background: #fff5f8;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
-        }
-
-        .section:hover {
-            transform: scale(1.02);
+            background: black;
+            border: 5px solid #ffcc00;
+            text-align: center;
         }
 
         h2 {
-            font-size: 24px;
-            color: #ff4081;
+            font-size: 16px;
+            color: #ffcc00;
         }
 
         p {
-            font-size: 18px;
+            font-size: 14px;
             margin: 10px 0;
-            color: #333;
+            color: #fff;
         }
 
         button {
-            padding: 12px 18px;
-            font-size: 16px;
-            color: white;
-            background: linear-gradient(135deg, #ff4081, #ff80ab);
-            border: none;
-            border-radius: 15px;
+            padding: 10px;
+            font-size: 14px;
+            font-family: 'Press Start 2P', cursive;
+            color: black;
+            background: #ffcc00;
+            border: 3px solid white;
             cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.2s;
         }
 
         button:hover {
-            background: linear-gradient(135deg, #ff80ab, #ff4081);
-            transform: scale(1.1);
+            background: #ff9900;
         }
 
         .log {
-            margin-top: 15px;
+            margin-top: 10px;
             text-align: left;
-            font-size: 14px;
+            font-size: 10px;
             max-height: 200px;
             overflow-y: auto;
-            background: white;
-            border-radius: 10px;
+            background: #222;
+            color: white;
             padding: 10px;
-            border: 2px solid #ff69b4;
-        }
-
-        .log p {
-            font-size: 14px;
-            margin: 5px 0;
-            color: #555;
+            border: 2px solid #ffcc00;
         }
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyC5xkI7FKP6fzbIg9LwAy7IXle6z4GnI-A",
@@ -103,20 +96,18 @@
 
         const INITIAL_WEEKLY_POINTS = { user: 5, girlfriend: 14 };
 
-       async function getPoints(user) {
-        const docRef = doc(db, "points", user);
-        const docSnap = await getDoc(docRef);
-    
-        if (docSnap.exists()) {
-            let data = docSnap.data();
-            // 確保 logs 欄位存在
-            if (!data.logs) data.logs = [];
-            return data;
+        async function getPoints(user) {
+            const docRef = doc(db, "points", user);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                let data = docSnap.data();
+                if (!data.logs) data.logs = [];
+                return data;
             } else {
-            return { total: 0, weekly: INITIAL_WEEKLY_POINTS[user], logs: [] };
+                return { total: 0, weekly: INITIAL_WEEKLY_POINTS[user], logs: [] };
             }
         }
-
 
         async function updateUI() {
             const userData = await getPoints("user");
@@ -132,78 +123,67 @@
             displayLogs("gfLogs", gfData.logs);
         }
 
-            function displayLogs(elementId, logs = []) {
+        function displayLogs(elementId, logs = []) {
             const logContainer = document.getElementById(elementId);
             logContainer.innerHTML = "";
-    
             logs.slice().reverse().forEach(log => {
-            const logEntry = document.createElement("p");
-            logEntry.textContent = `[${log.timestamp}] ${log.reason}`;
-            logContainer.appendChild(logEntry);
+                const logEntry = document.createElement("p");
+                logEntry.textContent = `[${log.timestamp}] ${log.reason}`;
+                logContainer.appendChild(logEntry);
             });
         }
 
+        async function deductPoint(user) {
+            try {
+                const reason = prompt(`Enter reason for ${user}'s deduction:`);
+                if (!reason) {
+                    alert("No reason entered. Deduction canceled.");
+                    return;
+                }
 
-        import { updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+                const docRef = doc(db, "points", user);
+                let data = await getPoints(user);
+                data.weekly = Math.max(0, data.weekly - 1);
 
-async function deductPoint(user) {
-    try {
-        // 提示輸入扣分原因
-        const reason = prompt(`Enter reason for ${user}'s deduction:`);
-        if (!reason) {
-            alert("No reason entered. Deduction canceled.");
-            return;
+                const timestamp = new Date().toLocaleString();
+                const logEntry = { timestamp, reason };
+
+                await updateDoc(docRef, {
+                    weekly: data.weekly,
+                    logs: arrayUnion(logEntry)
+                });
+
+                updateUI();
+                alert(`1 point deducted from ${user}.\nReason: ${reason}`);
+            } catch (error) {
+                console.error("Error deducting points:", error);
+                alert("Error deducting points. Check console for details.");
+            }
         }
 
-        const docRef = doc(db, "points", user);
-        let data = await getPoints(user);
-        data.weekly = Math.max(0, data.weekly - 1); // 確保不會低於 0
+        async function resetWeeklyPoints() {
+            const now = new Date();
+            const lastReset = localStorage.getItem("lastReset") || "0";
+            const currentWeek = getCurrentWeek();
 
-        // 生成時間戳記
-        const timestamp = new Date().toLocaleString();
-        const logEntry = { timestamp, reason };
-
-        // 🔥 使用 `updateDoc()` + `arrayUnion()` 追加新的紀錄
-        await updateDoc(docRef, {
-            weekly: data.weekly,
-            logs: arrayUnion(logEntry)
-        });
-
-        // 更新 UI
-        updateUI();
-        alert(`Successfully deducted 1 point from ${user}.\nReason: ${reason}`);
-    } catch (error) {
-        console.error("Error deducting points:", error);
-        alert("Error deducting points. Please check the console for details.");
-    }
-}
-
-
-       async function resetWeeklyPoints() {
-    const now = new Date();
-    const lastReset = localStorage.getItem("lastReset") || "0";
-    const currentWeek = getCurrentWeek();
-
-    if (lastReset !== currentWeek) {
-        await updateTotalPoints("user");
-        await updateTotalPoints("girlfriend");
-        localStorage.setItem("lastReset", currentWeek);
-    }
-}
-
+            if (lastReset !== currentWeek) {
+                await updateTotalPoints("user");
+                await updateTotalPoints("girlfriend");
+                localStorage.setItem("lastReset", currentWeek);
+            }
+        }
 
         async function updateTotalPoints(user) {
-    const docRef = doc(db, "points", user);
-    let data = await getPoints(user);
+            const docRef = doc(db, "points", user);
+            let data = await getPoints(user);
 
-    // 累積剩餘分數到總分數，並重置 logs
-    data.total += data.weekly;
-    data.weekly = INITIAL_WEEKLY_POINTS[user];
-    data.logs = []; // 🔥 清空 logs
+            data.total += data.weekly;
+            data.weekly = INITIAL_WEEKLY_POINTS[user];
+            data.logs = [];
 
-    await setDoc(docRef, data); // 更新 Firestore
-    updateUI();
-}
+            await setDoc(docRef, data);
+            updateUI();
+        }
 
         function getCurrentWeek() {
             const now = new Date();
@@ -215,26 +195,24 @@ async function deductPoint(user) {
         }
 
         window.onload = async function () {
-    await resetWeeklyPoints();
-    await updateUI();
+            await resetWeeklyPoints();
+            await updateUI();
 
-    // 確保事件綁定正確
-    document.getElementById("deductUser").onclick = function () {
-        deductPoint("user");
-    };
-    document.getElementById("deductGF").onclick = function () {
-        deductPoint("girlfriend");
-    };
-};
-
+            document.getElementById("deductUser").onclick = function () {
+                deductPoint("user");
+            };
+            document.getElementById("deductGF").onclick = function () {
+                deductPoint("girlfriend");
+            };
+        };
     </script>
 </head>
 <body>
-    <h1> No Bad Words ! </h1>
+    <h1> NO BAD WORDS! </h1>
     
     <div class="container">
         <div class="section">
-            <h2>Baby penguin</h2>
+            <h2>👾 Baby Penguin</h2>
             <p id="userTotal">Total: 0</p>
             <p id="userWeekly">Weekly Remaining: 0</p>
             <button id="deductUser">Deduct 1 Point</button>
@@ -242,7 +220,7 @@ async function deductPoint(user) {
         </div>
 
         <div class="section">
-            <h2>Bebe Celine</h2>
+            <h2>🕹️ Bebe Celine</h2>
             <p id="gfTotal">Total: 0</p>
             <p id="gfWeekly">Weekly Remaining: 0</p>
             <button id="deductGF">Deduct 1 Point</button>
