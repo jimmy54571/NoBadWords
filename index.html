@@ -1,58 +1,123 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>翴计發萝╰参</title>
+    <title>Points Tracker</title>
     <script type="module">
-        // 1?? 蹲 Firebase SDK
+        // 1?? Import Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // 2?? Firebase 砞﹚眖 Firebase Console 盡砞﹚
+        // 2?? Firebase Configuration (Replace with your actual Firebase credentials)
         const firebaseConfig = {
-            apiKey: "AIzaSyC5xkI7FKP6fzbIg9LwAy7IXle6z4GnI-A",
-            authDomain: "nobadword-87b1f.firebaseapp.com",
-            projectId: "nobadword-87b1f",
-            storageBucket: "nobadword-87b1f.firebasestorage.app",
-            messagingSenderId: "604543524172",
-            appId: "1:604543524172:web:06fdf372517480efd103e9"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
-        // 3?? ﹍て Firebase
+        // 3?? Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 4?? 弄 Firestore い翴计
+        // 4?? Default weekly points
+        const INITIAL_WEEKLY_POINTS = { user: 5, girlfriend: 14 };
+
+        // 5?? Function to get user points from Firestore
         async function getPoints(user) {
             const docRef = doc(db, "points", user);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                return docSnap.data().points;
+                return docSnap.data();
             } else {
-                return 0; // 箇砞
+                return { total: 0, weekly: INITIAL_WEEKLY_POINTS[user] };
             }
         }
 
-        // 5?? 穝 Firestore 翴计
-        async function deductPoint(user) {
-            const docRef = doc(db, "points", user);
-            let points = await getPoints(user);
-            points = Math.max(0, points - 1);
-            await setDoc(docRef, { points });
-            alert(`${user} 逞緇翴计: ${points}`);
+        // 6?? Function to update UI with points
+        async function updateUI() {
+            const userData = await getPoints("user");
+            const gfData = await getPoints("girlfriend");
+
+            document.getElementById("userTotal").textContent = `Total: ${userData.total}`;
+            document.getElementById("userWeekly").textContent = `Weekly Remaining: ${userData.weekly}`;
+
+            document.getElementById("gfTotal").textContent = `Total: ${gfData.total}`;
+            document.getElementById("gfWeekly").textContent = `Weekly Remaining: ${gfData.weekly}`;
         }
 
-        // 6?? 翴阑秙磅︽Ι翴
+        // 7?? Function to deduct points
+        async function deductPoint(user) {
+            const docRef = doc(db, "points", user);
+            let data = await getPoints(user);
+            data.weekly = Math.max(0, data.weekly - 1); // Prevent negative points
+
+            await setDoc(docRef, data);
+            updateUI();
+        }
+
+        // 8?? Function to reset and update total points every Sunday at 23:59
+        async function resetWeeklyPoints() {
+            const now = new Date();
+            const lastReset = localStorage.getItem("lastReset") || "0";
+            const currentWeek = getCurrentWeek();
+
+            if (lastReset !== currentWeek) {
+                await updateTotalPoints("user");
+                await updateTotalPoints("girlfriend");
+                localStorage.setItem("lastReset", currentWeek);
+            }
+        }
+
+        // 9?? Function to update total points and reset weekly points
+        async function updateTotalPoints(user) {
+            const docRef = doc(db, "points", user);
+            let data = await getPoints(user);
+            data.total += data.weekly;
+            data.weekly = INITIAL_WEEKLY_POINTS[user];
+
+            await setDoc(docRef, data);
+            updateUI();
+        }
+
+        // ? Function to get current week in YYYY-WW format
+        function getCurrentWeek() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const startDate = new Date(year, 0, 1);
+            const days = Math.floor((now - startDate) / (24 * 60 * 60 * 1000));
+            const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
+            return `${year}-W${weekNumber}`;
+        }
+
+        // 1??1?? Run everything on page load
         window.onload = async function () {
+            await resetWeeklyPoints();
+            await updateUI();
+
             document.getElementById("deductUser").onclick = () => deductPoint("user");
             document.getElementById("deductGF").onclick = () => deductPoint("girlfriend");
         };
     </script>
 </head>
 <body>
-    <h1>翴计發萝╰参</h1>
-    <button id="deductUser">Ι 1 翴 (User)</button>
-    <button id="deductGF">Ι 1 翴 (Girlfriend)</button>
+    <h1>Points Tracker</h1>
+    
+    <div>
+        <h2>User</h2>
+        <p id="userTotal">Total: 0</p>
+        <p id="userWeekly">Weekly Remaining: 0</p>
+        <button id="deductUser">Deduct 1 Point</button>
+    </div>
+
+    <div>
+        <h2>Girlfriend</h2>
+        <p id="gfTotal">Total: 0</p>
+        <p id="gfWeekly">Weekly Remaining: 0</p>
+        <button id="deductGF">Deduct 1 Point</button>
+    </div>
 </body>
 </html>
