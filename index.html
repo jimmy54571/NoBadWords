@@ -179,27 +179,31 @@ async function deductPoint(user) {
 }
 
 
-        async function resetWeeklyPoints() {
-            const now = new Date();
-            const lastReset = localStorage.getItem("lastReset") || "0";
-            const currentWeek = getCurrentWeek();
+       async function resetWeeklyPoints() {
+    const now = new Date();
+    const lastReset = localStorage.getItem("lastReset") || "0";
+    const currentWeek = getCurrentWeek();
 
-            if (lastReset !== currentWeek) {
-                await updateTotalPoints("user");
-                await updateTotalPoints("girlfriend");
-                localStorage.setItem("lastReset", currentWeek);
-            }
-        }
+    if (lastReset !== currentWeek) {
+        await updateTotalPoints("user");
+        await updateTotalPoints("girlfriend");
+        localStorage.setItem("lastReset", currentWeek);
+    }
+}
+
 
         async function updateTotalPoints(user) {
-            const docRef = doc(db, "points", user);
-            let data = await getPoints(user);
-            data.total += data.weekly;
-            data.weekly = INITIAL_WEEKLY_POINTS[user];
+    const docRef = doc(db, "points", user);
+    let data = await getPoints(user);
 
-            await setDoc(docRef, data);
-            updateUI();
-        }
+    // 累積剩餘分數到總分數，並重置 logs
+    data.total += data.weekly;
+    data.weekly = INITIAL_WEEKLY_POINTS[user];
+    data.logs = []; // 🔥 清空 logs
+
+    await setDoc(docRef, data); // 更新 Firestore
+    updateUI();
+}
 
         function getCurrentWeek() {
             const now = new Date();
