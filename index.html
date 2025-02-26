@@ -144,7 +144,9 @@
         }
 
 
-        async function deductPoint(user) {
+        import { updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+async function deductPoint(user) {
     try {
         // 提示輸入扣分原因
         const reason = prompt(`Enter reason for ${user}'s deduction:`);
@@ -153,7 +155,6 @@
             return;
         }
 
-        // 獲取 Firestore 數據
         const docRef = doc(db, "points", user);
         let data = await getPoints(user);
         data.weekly = Math.max(0, data.weekly - 1); // 確保不會低於 0
@@ -162,8 +163,11 @@
         const timestamp = new Date().toLocaleString();
         const logEntry = { timestamp, reason };
 
-        // 更新 Firestore
-        await setDoc(docRef, { ...data, logs: arrayUnion(logEntry) });
+        // 🔥 使用 `updateDoc()` + `arrayUnion()` 追加新的紀錄
+        await updateDoc(docRef, {
+            weekly: data.weekly,
+            logs: arrayUnion(logEntry)
+        });
 
         // 更新 UI
         updateUI();
