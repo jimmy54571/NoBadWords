@@ -103,11 +103,20 @@
 
         const INITIAL_WEEKLY_POINTS = { user: 5, girlfriend: 14 };
 
-        async function getPoints(user) {
-            const docRef = doc(db, "points", user);
-            const docSnap = await getDoc(docRef);
-            return docSnap.exists() ? docSnap.data() : { total: 0, weekly: INITIAL_WEEKLY_POINTS[user], logs: [] };
+       async function getPoints(user) {
+        const docRef = doc(db, "points", user);
+        const docSnap = await getDoc(docRef);
+    
+        if (docSnap.exists()) {
+            let data = docSnap.data();
+            // 確保 logs 欄位存在
+            if (!data.logs) data.logs = [];
+            return data;
+            } else {
+            return { total: 0, weekly: INITIAL_WEEKLY_POINTS[user], logs: [] };
+            }
         }
+
 
         async function updateUI() {
             const userData = await getPoints("user");
@@ -123,15 +132,17 @@
             displayLogs("gfLogs", gfData.logs);
         }
 
-        function displayLogs(elementId, logs) {
+            function displayLogs(elementId, logs = []) {
             const logContainer = document.getElementById(elementId);
             logContainer.innerHTML = "";
+    
             logs.slice().reverse().forEach(log => {
-                const logEntry = document.createElement("p");
-                logEntry.textContent = `[${log.timestamp}] ${log.reason}`;
-                logContainer.appendChild(logEntry);
+            const logEntry = document.createElement("p");
+            logEntry.textContent = `[${log.timestamp}] ${log.reason}`;
+            logContainer.appendChild(logEntry);
             });
         }
+
 
         async function deductPoint(user) {
     try {
