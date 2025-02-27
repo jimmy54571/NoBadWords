@@ -110,7 +110,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const INITIAL_WEEKLY_POINTS = { user: 5, girlfriend: 7 };
+        const INITIAL_WEEKLY_POINTS = { user: 7, girlfriend: 7 };
 
         async function getPoints(user) {
             const docRef = doc(db, "points", user);
@@ -161,7 +161,7 @@
             let data = await getPoints(user);
 
             data.total += data.weekly;
-            data.weekly = user === "user" ? 5 : 7;
+            data.weekly = user === "user" ? 7 : 7;
             data.logs = [];
 
             await setDoc(docRef, data);
