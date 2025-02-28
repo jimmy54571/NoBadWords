@@ -9,7 +9,7 @@
 
        body {
     font-family: 'Press Start 2P', cursive;
-    background: url('image.jpg') no-repeat center center fixed;
+    background: url('image.png') no-repeat center center fixed;
     background-size: cover;
     background-color: #0a0f23; /* 深夜藍作為備用色 */
     text-align: center;
@@ -17,58 +17,59 @@
     color: #ffdd55; /* 星光黃 */
 }
 
-      h1 {
+h1 {
     font-size: 24px;
     background: rgba(17, 34, 68, 0.8); /* 深夜藍色半透明 */
-    color: #ffdd55; /* 星光黃色 */
+    color: #ffdd55; /* 星光黃 */
     display: inline-block;
     padding: 10px;
     border: 3px solid #ffcc00; /* 黃金邊框 */
     text-transform: uppercase;
+    box-shadow: 0 0 8px #ffdd55; /* 發光效果 */
 }
 
-        .container {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            margin-top: 20px;
-        }
-
-        .section {
-            width: 40%;
-            padding: 20px;
-            background: gray;
-            border: 5px solid #cccccc;
-            text-align: center;
-        }
-
-       h2 {
+h2 {
     font-size: 16px;
     color: #aaddff; /* 月光藍 */
 }
 
-        p {
-            font-size: 14px;
-            margin: 10px 0;
-            color: #fff;
-        }
+.container {
+    background: rgba(10, 15, 35, 0.7); /* 深藍半透明背景 */
+    padding: 20px;
+    border-radius: 10px;
+}
 
-        button {
-            padding: 10px;
-            font-size: 14px;
-            font-family: 'Press Start 2P', cursive;
-            color: black;
-            background: #ffcc00;
-            border: 3px solid white;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+.section {
+    width: 40%;
+    padding: 20px;
+    background: rgba(10, 15, 35, 0.8); /* 深藍夜色 */
+    border: 5px solid #ffdd55; /* 發光黃邊框 */
+    text-align: center;
+}
 
-        button:hover {
-            background: #ff9900;
-        }
+p {
+    font-size: 14px;
+    margin: 10px 0;
+    color: #ffffff; /* 純白，提升可讀性 */
+}
 
-       .log {
+button {
+    padding: 10px;
+    font-size: 14px;
+    font-family: 'Press Start 2P', cursive;
+    color: black;
+    background: #ffcc00;
+    border: 3px solid white;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.3s;
+}
+
+button:hover {
+    background: #ff9900;
+    box-shadow: 0 0 8px #ffcc00; /* 按鈕發光 */
+}
+
+.log {
     margin-top: 10px;
     text-align: left;
     font-size: 10px;
@@ -78,23 +79,26 @@
     color: #ffdd55; /* 星光黃 */
     padding: 10px;
     border: 2px solid #ffdd55; /* 發光黃邊框 */
+    box-shadow: 0 0 8px #ffdd55;
 }
 
-        /* 🎯 新增的「手動重置」按鈕 */
-        .reset-button {
-            margin-top: 20px;
-            padding: 12px;
-            font-size: 14px;
-            background: #ff3300;
-            color: white;
-            border: 3px solid white;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+/* 🎯 「手動重置」按鈕 */
+.reset-button {
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 14px;
+    background: #ff3300;
+    color: white;
+    border: 3px solid white;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s;
+}
 
-        .reset-button:hover {
-            background: #cc0000;
-        }
+.reset-button:hover {
+    background: #cc0000;
+    box-shadow: 0 0 8px #ff3300; /* 紅色發光 */
+}
+
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
