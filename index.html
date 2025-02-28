@@ -9,7 +9,7 @@
 
        body {
     font-family: 'Press Start 2P', cursive;
-    background: url('image.jpg') no-repeat center center fixed;
+    background: url('image.png') no-repeat center center fixed;
     background-size: cover;
     background-color: #0a0f23; /* 深夜藍作為備用色 */
     text-align: center;
@@ -25,7 +25,7 @@ h1 {
     padding: 10px;
     border: 3px solid #ffcc00; /* 黃金邊框 */
     text-transform: uppercase;
-    box-shadow: 0 0 8px #ffdd55; /* 發光效果 */
+    box-shadow: 0 0 10px #ffdd55; /* 標題發光 */
 }
 
 h2 {
@@ -33,18 +33,24 @@ h2 {
     color: #aaddff; /* 月光藍 */
 }
 
+/* 🎯 讓兩個 section 平行 */
 .container {
-    background: rgba(10, 15, 35, 0.7); /* 深藍半透明背景 */
-    padding: 20px;
-    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    margin-top: 20px;
 }
 
+/* 🎮 每個 section 的 UI */
 .section {
     width: 40%;
     padding: 20px;
     background: rgba(10, 15, 35, 0.8); /* 深藍夜色 */
     border: 5px solid #ffdd55; /* 發光黃邊框 */
     text-align: center;
+    box-shadow: 0 0 15px #ffdd55; /* ✨ 發光效果 */
+    border-radius: 10px;
 }
 
 p {
@@ -53,6 +59,7 @@ p {
     color: #ffffff; /* 純白，提升可讀性 */
 }
 
+/* 🎮 按鈕設計 */
 button {
     padding: 10px;
     font-size: 14px;
@@ -66,9 +73,10 @@ button {
 
 button:hover {
     background: #ff9900;
-    box-shadow: 0 0 8px #ffcc00; /* 按鈕發光 */
+    box-shadow: 0 0 8px #ffcc00; /* ✨ 按鈕發光 */
 }
 
+/* 📝 記錄框 */
 .log {
     margin-top: 10px;
     text-align: left;
@@ -79,7 +87,7 @@ button:hover {
     color: #ffdd55; /* 星光黃 */
     padding: 10px;
     border: 2px solid #ffdd55; /* 發光黃邊框 */
-    box-shadow: 0 0 8px #ffdd55;
+    box-shadow: 0 0 10px #ffdd55; /* 記錄框發光 */
 }
 
 /* 🎯 「手動重置」按鈕 */
@@ -96,7 +104,7 @@ button:hover {
 
 .reset-button:hover {
     background: #cc0000;
-    box-shadow: 0 0 8px #ff3300; /* 紅色發光 */
+    box-shadow: 0 0 10px #ff3300; /* 紅色發光 */
 }
 
     </style>
