@@ -174,6 +174,16 @@ button:hover {
         console.log("Weekly points reset complete!");
     }
 }
+async function manualresetWeeklyPoints() {
+        console.log("Resetting weekly points...");
+
+        await updateTotalPoints("user");
+        await updateTotalPoints("girlfriend");
+
+        console.log("Weekly points reset complete!");
+    
+}
+        
 
         async function updateTotalPoints(user) {
     const docRef = doc(db, "points", user);
@@ -236,7 +246,7 @@ button:hover {
     };
 
     document.getElementById("resetWeekly").onclick = function () {
-        resetWeeklyPoints();
+        manualresetWeeklyPoints();
     };
 
     // 🕒 每分鐘檢查是否為週日 23:59，若是則自動執行 resetWeeklyPoints
