@@ -106,6 +106,45 @@ button:hover {
     background: #cc0000;
     box-shadow: 0 0 10px #ff3300; /* 紅色發光 */
 }
+/* 🎯 規則區塊 */
+.rules-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 50px;
+    margin-top: 20px;
+    background: rgba(10, 15, 35, 0.8); /* 深藍半透明背景 */
+    padding: 20px;
+    border-radius: 10px;
+    border: 3px solid #ffdd55; /* 發光邊框 */
+    box-shadow: 0 0 15px #ffdd55;
+}
+
+.rule-box {
+    width: 45%;
+    text-align: left;
+    background: rgba(17, 34, 68, 0.8); /* 深藍夜色 */
+    padding: 15px;
+    border: 3px solid #ffdd55;
+    box-shadow: 0 0 10px #ffdd55;
+}
+
+.rule-box h2 {
+    text-align: center;
+    color: #ffdd55;
+    font-size: 16px;
+}
+
+.rule-box ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.rule-box li {
+    font-size: 14px;
+    color: #ffffff;
+    margin: 5px 0;
+}
 
     </style>
     <script type="module">
@@ -255,8 +294,28 @@ async function manualresetWeeklyPoints() {
     </script>
 </head>
 <body>
-    <h1> NO BAD WORDS! </h1>
-    
+    <h1> MISSION POSSIBLE </h1>
+
+    <!-- 🎯 新增遊戲規則區 -->
+    <div class="rules-container">
+        <div class="rule-box">
+            <h2>Jimmy's Rules</h2>
+            <ul>
+                <li>1. No bad words</li>
+                <li>2. Study English every day</li>
+                <li>3. Wear a helmet when riding a scooter</li>
+            </ul>
+        </div>
+
+        <div class="rule-box">
+            <h2>Celine's Rules</h2>
+            <ul>
+                <li>1. No bad words</li>
+                <li>2. Sleep before 2 AM on weekdays</li>
+            </ul>
+        </div>
+    </div>
+
     <div class="container">
         <div class="section">
             <h2>👾 Baby Penguin</h2>
@@ -276,6 +335,7 @@ async function manualresetWeeklyPoints() {
     </div>
 
     <!-- 🎯 新增「手動重置」按鈕 -->
-    <!--<button id="resetWeekly" class="reset-button">Reset Weekly Points</button>-->
+    <button id="resetWeekly" class="reset-button">Reset Weekly Points</button>
 </body>
+
 </html>
