@@ -164,23 +164,31 @@ button:hover {
         }
 
         async function resetWeeklyPoints() {
-            await updateTotalPoints("user");
-            await updateTotalPoints("girlfriend");
-            localStorage.setItem("lastReset", getCurrentWeek());
-            alert("Weekly reset complete!");
-        }
+    const now = new Date();
+    if (now.getDay() === 0 && now.getHours() === 23 && now.getMinutes() === 59) {
+        console.log("Resetting weekly points...");
+
+        await updateTotalPoints("user");
+        await updateTotalPoints("girlfriend");
+
+        console.log("Weekly points reset complete!");
+    }
+}
 
         async function updateTotalPoints(user) {
-            const docRef = doc(db, "points", user);
-            let data = await getPoints(user);
+    const docRef = doc(db, "points", user);
+    let data = await getPoints(user);
 
-            data.total += data.weekly;
-            data.weekly = user === "user" ? 7 : 7;
-            data.logs = [];
+    // 累積剩餘分數到總分數
+    data.total += data.weekly;
 
-            await setDoc(docRef, data);
-            updateUI();
-        }
+    // 🎯 每週日 23:59 分重置 `weekly`
+    data.weekly = user === "user" ? 7 : 7;
+    data.logs = []; // 🔥 清空 logs
+
+    await setDoc(docRef, data);
+    updateUI();
+}
 
         function getCurrentWeek() {
             const now = new Date();
@@ -218,20 +226,22 @@ button:hover {
     }
 }
         window.onload = async function () {
-            await updateUI();
+    await updateUI();
 
-            document.getElementById("deductUser").onclick = function () {
-                deductPoint("user");
-            };
-            document.getElementById("deductGF").onclick = function () {
-                deductPoint("girlfriend");
-            };
+    document.getElementById("deductUser").onclick = function () {
+        deductPoint("user");
+    };
+    document.getElementById("deductGF").onclick = function () {
+        deductPoint("girlfriend");
+    };
 
-            // 🎯 綁定「手動重置」按鈕
-            document.getElementById("resetWeekly").onclick = function () {
-                resetWeeklyPoints();
-            };
-        };
+    document.getElementById("resetWeekly").onclick = function () {
+        resetWeeklyPoints();
+    };
+
+    // 🕒 每分鐘檢查是否為週日 23:59，若是則自動執行 resetWeeklyPoints
+    setInterval(resetWeeklyPoints, 60000);
+};
     </script>
 </head>
 <body>
@@ -256,6 +266,6 @@ button:hover {
     </div>
 
     <!-- 🎯 新增「手動重置」按鈕 -->
-    <!--<button id="resetWeekly" class="reset-button">Reset Weekly Points</button>-->
+    <button id="resetWeekly" class="reset-button">Reset Weekly Points</button>
 </body>
 </html>
